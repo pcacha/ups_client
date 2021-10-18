@@ -15,10 +15,27 @@ namespace ups_client
 
         public GameField()
         {
+            Init();
+        }
+
+        private void Init()
+        {
             HasStone = false;
             IsWhite = false;
             IsKing = false;
             IsSelected = false;
+        }
+
+        public void RemoveStone()
+        {
+            Init();
+        }
+
+        public void CreateFrom(GameField from)
+        {
+            HasStone = from.HasStone;
+            IsWhite = from.IsWhite;
+            IsKing = from.IsKing;            
         }
     }
 }

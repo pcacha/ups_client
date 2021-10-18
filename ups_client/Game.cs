@@ -54,9 +54,11 @@ namespace ups_client
                     GameFields[i, j] = new GameField();
                 }
             }
+
+            WinnerName = "-";
         }
 
-        public void Select(int y, int x)
+        public void Select(int x, int y)
         {
             if(x < 0 || y < 0)
             {
@@ -73,7 +75,7 @@ namespace ups_client
                 IsSelected = true;
                 SelectedX = x;
                 SelectedY = y;
-                GameFields[SelectedY, SelectedX].IsSelected = true;
+                GameFields[SelectedY, SelectedX].IsSelected = true;                
             }
         }
     }
