@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,7 +17,20 @@ namespace ups_client
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            Game game = new Game();
+            SocketManager socketManager = new SocketManager("127.0.0.1", 9999, game);
+            Form1 form = new Form1(socketManager, game);
+            LoginForm loginForm = new LoginForm(socketManager, form, game);
+
+            socketManager.Form = form;
+            socketManager.LoginForm = loginForm;
+
+            Thread listenThread = new Thread(new ThreadStart(socketManager.Listen));
+            listenThread.IsBackground = true;
+            listenThread.Start();
+
+            Application.Run(loginForm);
         }
     }
 }

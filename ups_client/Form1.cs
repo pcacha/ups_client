@@ -16,48 +16,35 @@ namespace ups_client
         private Panel gamePanel;
         private Game game;
         private Panel[,] panels;
+        private SocketManager socketManager;
 
-        public Form1()
+        public Form1(SocketManager socketManager, Game game)
         {
             InitializeComponent();
-            game = new Game();
+            this.game = game;
             panels = new Panel[gameboardLength, gameboardLength];
+            this.socketManager = socketManager;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            createGameboard();
+            CreateGameboard();          
+            PrintGame();              
+        }        
 
-            GameField[,] gameFields = game.GameFields;
-            gameFields[0, 3].HasStone = true;
-            
-            gameFields[0, 4].HasStone = true;
-            gameFields[0, 4].IsWhite = true;
-
-            gameFields[0, 5].HasStone = true;
-            gameFields[0, 5].IsKing = true;
-
-            gameFields[0, 6].HasStone = true;
-            gameFields[0, 6].IsKing = true;
-            gameFields[0, 6].IsWhite = true;
-
-            printGame();
-        }
-
-        private void createGameboard()
+        private void CreateGameboard()
         {
             gamePanel = new Panel();
             gamePanel.Height = gameboardPanelSize * gameboardLength;
             gamePanel.Width = gameboardPanelSize * gameboardLength;
             gamePanel.Top = topMargin;
-            gamePanel.Left = leftMargin;
-            gamePanel.BackColor = Color.Black;
+            gamePanel.Left = leftMargin;           
             gamePanel.Cursor = Cursors.Hand;
             this.Controls.Add(gamePanel);
-            createPanels();
+            CreatePanels();
         }
 
-        private void createPanels()
+        private void CreatePanels()
         {
             for (int i = 0; i < gameboardLength; i++)
             {
@@ -85,19 +72,19 @@ namespace ups_client
             }
         }
 
-        private void printGame()
+        private void PrintGame()
         {
-            printGameboard();
-            printSideInfo();
+            PrintGameboard();
+            PrintSideInfo();
         }
 
-        private void printGameboard()
+        private void PrintGameboard()
         {           
             GameField[,] gameFields = game.GameFields;            
 
-            for (int i = 0; i < gameFields.GetLength(0); i++)
+            for (int i = 0; i < gameboardLength; i++)
             {
-                for (int j = 0; j < gameFields.GetLength(1); j++)
+                for (int j = 0; j < gameboardLength; j++)
                 {
                     GameField gf = gameFields[i, j];
                     Panel p = panels[i, j];                   
@@ -149,7 +136,7 @@ namespace ups_client
             }
         }
         
-        private void printSideInfo()
+        private void PrintSideInfo()
         {
             playerNameLabel.Text = game.PlayerName;
             opponentNameLabel.Text = game.OpponentName;
@@ -172,7 +159,7 @@ namespace ups_client
         private void clearSelectionBtn_Click(object sender, EventArgs e)
         {
             game.Select(-1, -1);
-            printGame();
+            PrintGame();
         }
 
         private void gameboardPanel_Click(object sender, EventArgs e)
@@ -198,7 +185,7 @@ namespace ups_client
                 game.Select(-1, -1);
             }
 
-            printGame();
+            PrintGame();
         }
     }
 }

@@ -7,6 +7,12 @@ using static ups_client.Constants;
 
 namespace ups_client
 {
+    public enum GameStateEnum
+    {
+        INIT,
+        IN_GAME,
+    }
+
     public class Game
     {
         public string PlayerName { get; set; }
@@ -15,10 +21,10 @@ namespace ups_client
         public bool IsPlayerWhite { get; set; }
 
         public bool PlayerPlaying { get; set; }
-        public string PlayingName { 
-            get 
-            { 
-                if(PlayerPlaying)
+        public string PlayingName {
+            get
+            {
+                if (PlayerPlaying)
                 {
                     return PlayerName;
                 }
@@ -26,7 +32,7 @@ namespace ups_client
                 {
                     return OpponentName;
                 }
-            } 
+            }
         }
 
         public bool GameEnd { get; set; }
@@ -38,10 +44,12 @@ namespace ups_client
 
         public GameField[,] GameFields { get; set; }
 
+        public GameStateEnum GameState { get; set; }
+
         public Game()
         {
-            PlayerName = "Hráč";
-            OpponentName = "Oponent";
+            PlayerName = "-";
+            OpponentName = "-";
             IsPlayerWhite = true;
             PlayerPlaying = true;
 
@@ -56,6 +64,7 @@ namespace ups_client
             }
 
             WinnerName = "-";
+            GameState = GameStateEnum.INIT;
         }
 
         public void Select(int x, int y)
