@@ -23,14 +23,19 @@ namespace ups_client
         public const string whiteKingPath = "img/white_king.png";
         public const int maxNameLen = 10;
 
-        public const int msgLength = 110;
+        public const int maxMsgLength = 110;
+        public const int minMsgLength = 4;
         public const string msgStart = "$";
         public const string msgSeparator = "|";
-        public const string msgFill = "#";
+        public const string msgEnd = "#";
+        public const string msgNull = "@";
         public const string connect = "CONNECT";
         public const string connectOk = "OK";
         public const string connectInvalid = "INVALID_NAME";
+        public const string white = "WHITE";
+        public const string black = "BLACK";
 
-        public const string invalidNameMsg = "Přezdívka je již zabraná nebo není validní";
+        public const string invalidNameMsg = "Přezdívka není validní";
+        public const string takenNameMsg = "Přezdívka je již zabraná";
     }
 }

@@ -41,70 +41,83 @@ namespace ups_client
         public void Send(string msg)
         {
             byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
-            int charsSend = socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
-            Console.WriteLine("Send - {0} chars", charsSend);
+            socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
+            Console.WriteLine("Send - msg: " + msg);
         }
 
         public void Listen()
         {            
             while(socket.Connected)
             {
-                if(socket.Available == Constants.msgLength)
+                if(socket.Available > 0)
                 {
-                    byte[] byteMsg = new byte[Constants.msgLength];
-                    socket.Receive(byteMsg, byteMsg.Length, SocketFlags.None);
-                    string msg = Encoding.UTF8.GetString(byteMsg, 0, byteMsg.Length);
-                    Console.WriteLine("Received - " + msg);
-                    HandleMessage(msg);
+                    byte[] dataChars = new byte[socket.Available];
+                    socket.Receive(dataChars, dataChars.Length, SocketFlags.None);
+                    string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
+
+                    while(dataString.Length > 0)
+                    {
+                        int endIdx = dataString.IndexOf(Constants.msgEnd[0]);
+
+                        if(endIdx == -1)
+                        {
+                            CloseSocket();                            
+                        }
+
+                        string msg = dataString.Substring(0, endIdx + 1);
+                        dataString = dataString.Substring(endIdx + 1);
+
+                        int lastStartIdx = msg.LastIndexOf(Constants.msgStart[0]);
+
+                        if(lastStartIdx != 0)
+                        {
+                            CloseSocket();
+                        }
+
+                        msg = msg.Substring(lastStartIdx);
+
+                        if(msg.Length <= Constants.maxMsgLength && msg.Length >= Constants.minMsgLength)
+                        {
+                            Console.WriteLine("Received - msg: " + msg);
+                            HandleMessage(msg);
+                        }
+                        else
+                        {
+                            CloseSocket();
+                        }
+                    }
                 }              
             }
         }
 
         public void CloseSocket()
         {
+            Console.WriteLine("Socket - error");
+            Console.WriteLine("Application - close");
             socket.Close();
             Application.Exit();
         }
 
         private void HandleMessage(string msg)
-        {
-            if(!ValidationUtils.BasicMsgCheck(msg))
-            {
-                CloseSocket();
-            }
-            msg = RemoveStartStopChars(msg);
+        {            
+            msg = msg.Substring(1, msg.Length - 2);
 
             string[] msgParts = msg.Split(Constants.msgSeparator[0]);
 
+            if(msgParts.Length < 1)
+            {
+                CloseSocket();
+            }
+
             switch(msgParts[0])
             {
-                case Constants.connect:
-                    if(msgParts.Length != 2)
-                    {
-                        CloseSocket();
-                    }
+                case Constants.connect:                    
                     LoginForm.HandleConnect(msgParts);
                     break;
                 default:
                     CloseSocket();
                     break;
             }
-        }
-
-        private string RemoveStartStopChars(string msg)
-        {
-            int firstEndCharIdx = 1;
-
-            for(int i = msg.Length - 1; i > 0; i--)
-            {
-                if(msg[i] != Constants.msgFill[0])
-                {
-                    firstEndCharIdx = i;
-                    break;
-                }
-            }
-
-            return msg.Substring(1, firstEndCharIdx);
-        }
+        }       
     }
 }

@@ -15,21 +15,12 @@ namespace ups_client
                 return false;
             }
 
-            if(login.Contains(Constants.msgStart) || login.Contains(Constants.msgFill) || login.Contains(Constants.msgSeparator))
+            if(login.Contains(Constants.msgStart) || login.Contains(Constants.msgEnd) || login.Contains(Constants.msgSeparator) || login.Contains(Constants.msgNull))
             {
                 return false;
             }
 
             return true;
-        }
-
-        internal static bool BasicMsgCheck(string msg)
-        {
-            if(msg[0] == Constants.msgStart[0] && msg[msg.Length - 1] == Constants.msgFill[0])
-            {
-                return true;
-            }
-            return false;
-        }
+        }        
     }
 }

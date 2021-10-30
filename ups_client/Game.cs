@@ -10,7 +10,9 @@ namespace ups_client
     public enum GameStateEnum
     {
         INIT,
+        QUEUED,
         IN_GAME,
+        END_GAME,
     }
 
     public class Game
@@ -20,11 +22,15 @@ namespace ups_client
 
         public bool IsPlayerWhite { get; set; }
 
-        public bool PlayerPlaying { get; set; }
+        public bool? PlayerPlaying { get; set; }
         public string PlayingName {
             get
             {
-                if (PlayerPlaying)
+                if(GameState != GameStateEnum.IN_GAME)
+                {
+                    return "-";
+                }
+                else if (PlayerPlaying == true)
                 {
                     return PlayerName;
                 }
@@ -35,7 +41,6 @@ namespace ups_client
             }
         }
 
-        public bool GameEnd { get; set; }
         public string WinnerName { get; set; }
 
         public bool IsSelected { get; private set; }
@@ -51,9 +56,8 @@ namespace ups_client
             PlayerName = "-";
             OpponentName = "-";
             IsPlayerWhite = true;
-            PlayerPlaying = true;
-
-            GameEnd = false;
+            PlayerPlaying = null;
+            
             GameFields = new GameField[gameboardLength, gameboardLength];
             for (int i = 0; i < gameboardLength; i++)
             {

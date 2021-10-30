@@ -15,27 +15,42 @@ namespace ups_client
 
         public GameField()
         {
-            Init();
-        }
-
-        private void Init()
-        {
             HasStone = false;
             IsWhite = false;
             IsKing = false;
             IsSelected = false;
-        }
+        }       
 
-        public void RemoveStone()
+        public void setEncodingBased(char code)
         {
-            Init();
-        }
-
-        public void CreateFrom(GameField from)
-        {
-            HasStone = from.HasStone;
-            IsWhite = from.IsWhite;
-            IsKing = from.IsKing;            
-        }
+            switch(code)
+            {
+                case '1':
+                    HasStone = false;
+                    IsWhite = false;
+                    IsKing = false;
+                    break;
+                case '2':
+                    HasStone = true;
+                    IsWhite = true;
+                    IsKing = false;
+                    break;
+                case '3':
+                    HasStone = true;
+                    IsWhite = false;
+                    IsKing = false;
+                    break;
+                case '4':
+                    HasStone = true;
+                    IsWhite = true;
+                    IsKing = true;
+                    break;
+                case '5':
+                    HasStone = true;
+                    IsWhite = false;
+                    IsKing = true;
+                    break;
+            }
+        }       
     }
 }

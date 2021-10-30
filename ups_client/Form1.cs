@@ -72,7 +72,7 @@ namespace ups_client
             }
         }
 
-        private void PrintGame()
+        public void PrintGame()
         {
             PrintGameboard();
             PrintSideInfo();
@@ -177,10 +177,7 @@ namespace ups_client
             else
             {
                 GameField startField = gameFields[game.SelectedY, game.SelectedX];
-                GameField toField = gameFields[y, x];
-
-                toField.CreateFrom(startField);
-                startField.RemoveStone();               
+                GameField toField = gameFields[y, x];                             
 
                 game.Select(-1, -1);
             }

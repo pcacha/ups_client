@@ -10,16 +10,7 @@ namespace ups_client
     {
         public static string Login(string nick)
         {
-            return AddHashtags(Constants.msgStart + Constants.connect + Constants.msgSeparator + nick);
-        }
-
-        private static string AddHashtags(string msg)
-        {
-            for(int i = msg.Length; i < Constants.msgLength; i++)
-            {
-                msg += Constants.msgFill;
-            }
-            return msg;
-        }
+            return Constants.msgStart + Constants.connect + Constants.msgSeparator + nick + Constants.msgEnd;
+        }        
     }
 }

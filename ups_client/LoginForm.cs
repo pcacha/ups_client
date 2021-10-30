@@ -15,6 +15,7 @@ namespace ups_client
         private SocketManager socketManager;
         private Form1 form;
         private Game game;
+        private string nick;
 
         public LoginForm(SocketManager socketManager, Form1 form, Game game)
         {
@@ -37,32 +38,50 @@ namespace ups_client
             {
                 socketManager.Send(SendMsgUtils.Login(nick));
                 connectButton.Enabled = false;
+                this.nick = nick;
             }
         }
 
         internal void HandleConnect(string[] msgParts)
         {
-            if(game.GameState != GameStateEnum.INIT)
+            if(game.GameState != GameStateEnum.INIT || msgParts.Length < 2)
             {
                 socketManager.CloseSocket();
             }
 
-            if(msgParts[1] == Constants.connectOk)
+            switch(msgParts[1])
             {
-                game.GameState = GameStateEnum.IN_GAME;
-                Close();
-                form.Show();
-            }
-            if (msgParts[1] == Constants.connectInvalid)
-            {
-                MessageBox.Show(Constants.invalidNameMsg);
-                nameTextBox.Text = "";
-                connectButton.Enabled = true;
-            }
-            else
-            {
-                socketManager.CloseSocket();
-            }
+                case Constants.connectOk:
+                    if(msgParts.Length !=3 || (msgParts[2] != Constants.white && msgParts[2] != Constants.black))
+                    {
+                        socketManager.CloseSocket();
+                    }
+                    game.GameState = GameStateEnum.QUEUED;
+                    game.PlayerName = nick;
+                    if(msgParts[2] == Constants.white)
+                    {
+                        game.IsPlayerWhite = true;
+                    }
+                    else
+                    {
+                        game.IsPlayerWhite = false;
+                    }
+                    Close();
+                    form.Show();
+                    break;
+                case Constants.connectInvalid:
+                    if (msgParts.Length != 2)
+                    {
+                        socketManager.CloseSocket();
+                    }
+                    MessageBox.Show(Constants.takenNameMsg);
+                    nameTextBox.Text = "";
+                    connectButton.Enabled = true;
+                    break;
+                default:
+                    socketManager.CloseSocket();
+                    break;
+            }           
         }
     }
 }
