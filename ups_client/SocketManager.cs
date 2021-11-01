@@ -151,6 +151,12 @@ namespace ups_client
                 case Constants.connect:                    
                     LoginForm.HandleConnect(msgParts);
                     break;
+                case Constants.game:
+                    Form.HandleGame(msgParts);
+                    break;
+                case Constants.move:
+                    Form.HandleMoveFailed(msgParts);
+                    break;
                 default:
                     CloseSocket();
                     break;

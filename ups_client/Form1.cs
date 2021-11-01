@@ -154,7 +154,7 @@ namespace ups_client
                 opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
             }
            
-        }
+        }        
 
         private void clearSelectionBtn_Click(object sender, EventArgs e)
         {
@@ -176,13 +176,32 @@ namespace ups_client
             }
             else
             {
-                GameField startField = gameFields[game.SelectedY, game.SelectedX];
-                GameField toField = gameFields[y, x];                             
+                if(game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)
+                {
+                    socketManager.Send(SendMsgUtils.Move(game.SelectedY, game.SelectedX, y, x));
+                }                                        
 
                 game.Select(-1, -1);
             }
 
             PrintGame();
+        }
+
+        public void HandleGame(string[] msgParts)
+        {
+            
+        }
+
+        public void HandleMoveFailed(string[] msgParts)
+        {
+            if(game.GameState == GameStateEnum.IN_GAME && msgParts.Length == 2 && msgParts[1] == Constants.failed)
+            {
+                MessageBox.Show(Constants.moveFailedMsg);
+            }
+            else
+            {
+                socketManager.CloseSocket();
+            }
         }
     }
 }
