@@ -49,6 +49,7 @@ namespace ups_client
         {            
             while(socket.Connected)
             {
+                /*
                 if(socket.Available > 0)
                 {
                     byte[] dataChars = new byte[socket.Available];
@@ -65,7 +66,15 @@ namespace ups_client
                         }
 
                         string msg = dataString.Substring(0, endIdx + 1);
-                        dataString = dataString.Substring(endIdx + 1);
+                        if(endIdx + 1 == dataString.Length)
+                        {
+                            dataString = "";
+                        }
+                        else
+                        {
+                            dataString = dataString.Substring(endIdx + 1);
+                        }
+                        
 
                         int lastStartIdx = msg.LastIndexOf(Constants.msgStart[0]);
 
@@ -73,8 +82,6 @@ namespace ups_client
                         {
                             CloseSocket();
                         }
-
-                        msg = msg.Substring(lastStartIdx);
 
                         if(msg.Length <= Constants.maxMsgLength && msg.Length >= Constants.minMsgLength)
                         {
@@ -86,7 +93,37 @@ namespace ups_client
                             CloseSocket();
                         }
                     }
-                }              
+                }
+                */
+
+                if (socket.Available > 0)
+                {
+                    if(socket.Available > Constants.maxMsgLength)
+                    {
+                        CloseSocket();
+                    }
+
+                    byte[] dataChars = new byte[socket.Available];
+                    socket.Receive(dataChars, dataChars.Length, SocketFlags.None);
+                    string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
+
+                    int endIdx = dataString.IndexOf(Constants.msgEnd[0]);
+                    if (endIdx == -1 || dataString[0] != Constants.msgStart[0])
+                    {
+                        CloseSocket();
+                    }
+
+                    string msg = dataString.Substring(0, endIdx + 1); 
+                    if (msg.Length >= Constants.minMsgLength)
+                    {
+                        Console.WriteLine("Received - msg: " + msg);
+                        HandleMessage(msg);
+                    }
+                    else
+                    {
+                        CloseSocket();
+                    }
+                }                
             }
         }
 

@@ -36,9 +36,9 @@ namespace ups_client
             }
             else
             {
-                socketManager.Send(SendMsgUtils.Login(nick));
                 connectButton.Enabled = false;
                 this.nick = nick;
+                socketManager.Send(SendMsgUtils.Login(nick));
             }
         }
 
@@ -66,8 +66,8 @@ namespace ups_client
                     {
                         game.IsPlayerWhite = false;
                     }
-                    Close();
-                    form.Show();
+                    Invoke(new Action(() => { Hide(); }));
+                    Application.Run(form);
                     break;
                 case Constants.connectInvalid:
                     if (msgParts.Length != 2)
@@ -75,8 +75,11 @@ namespace ups_client
                         socketManager.CloseSocket();
                     }
                     MessageBox.Show(Constants.takenNameMsg);
-                    nameTextBox.Text = "";
-                    connectButton.Enabled = true;
+                    Invoke(new Action(() => 
+                    {
+                        nameTextBox.Text = "";
+                        connectButton.Enabled = true;
+                    }));                    
                     break;
                 default:
                     socketManager.CloseSocket();
