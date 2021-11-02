@@ -170,26 +170,107 @@ namespace ups_client
             int x = location.X / gameboardPanelSize;
             int y = location.Y / gameboardPanelSize;           
             
-            if(!game.IsSelected)
-            {                
-                game.Select(x, y);              
-            }
-            else
+            if(game.GameState == GameStateEnum.IN_GAME)
             {
-                if(game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)
+                if (!game.IsSelected)
                 {
-                    socketManager.Send(SendMsgUtils.Move(game.SelectedY, game.SelectedX, y, x));
-                }                                        
+                    game.Select(x, y);
+                }
+                else
+                {
+                    if (game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)
+                    {
+                        socketManager.Send(SendMsgUtils.Move(game.SelectedY, game.SelectedX, y, x));
+                    }
 
-                game.Select(-1, -1);
+                    game.Select(-1, -1);
+                }
+
+                PrintGame();
             }
-
-            PrintGame();
         }
 
         public void HandleGame(string[] msgParts)
         {
-            
+            if((game.GameState == GameStateEnum.IN_GAME || game.GameState == GameStateEnum.QUEUED) && msgParts.Length == 5)
+            {
+                if(game.GameState == GameStateEnum.QUEUED)
+                {
+                    game.GameState = GameStateEnum.IN_GAME;
+                }
+
+                int[] gameboardEncoded = GetEncodedGameboard(msgParts[4]);
+
+                if(gameboardEncoded == null)
+                {
+                    socketManager.CloseSocket();
+                }
+
+                game.OpponentName = msgParts[1];
+
+                string playing = msgParts[2];
+                if(playing == Constants.msgNull)
+                {
+                    game.PlayerPlaying = null;
+                }
+                else if (playing == game.PlayerName)
+                {
+                    game.PlayerPlaying = true;
+                } 
+                else
+                {
+                    game.PlayerPlaying = false;
+                }
+
+                string winner = msgParts[3];
+                if(winner == Constants.msgNull)
+                {
+                    game.WinnerName = Constants.fieldEmpty;
+                }
+                else
+                {
+                    if(winner != game.PlayerName && winner != game.OpponentName)
+                    {
+                        socketManager.CloseSocket();
+                    }
+                    else
+                    {
+                        game.WinnerName = winner;
+                        game.GameState = GameStateEnum.FINISHED;
+                    }
+                }
+
+                game.UpdateGameboard(gameboardEncoded);
+                game.Select(-1, -1);
+                PrintGame();
+            }
+            else
+            {
+                socketManager.CloseSocket();
+            }
+        }
+
+        private int[] GetEncodedGameboard(string gameboardString)
+        {
+            if(gameboardString.Length != Constants.gameboardLength * Constants.gameboardLength)
+            {
+                return null;
+            }
+
+            int[] gameboardEncoded = new int[Constants.gameboardLength * Constants.gameboardLength];
+
+            for(int i = 0; i < gameboardString.Length; i++)
+            {
+                if(gameboardString[i] != '1' && gameboardString[i] != '2' && gameboardString[i] != '3' && gameboardString[i] != '4' && gameboardString[i] != '5')
+                {
+                    return null;
+                }
+
+                gameboardEncoded[i] = Int32.Parse(Char.ToString(gameboardString[i]));
+            }
+
+
+            return gameboardEncoded;
         }
 
         public void HandleMoveFailed(string[] msgParts)

@@ -67,7 +67,7 @@ namespace ups_client
                         game.IsPlayerWhite = false;
                     }
                     Invoke(new Action(() => { Hide(); }));
-                    Application.Run(form);
+                    Invoke(new Action(() => { form.Show(); }));
                     break;
                 case Constants.connectInvalid:
                     if (msgParts.Length != 2)

@@ -12,7 +12,7 @@ namespace ups_client
         INIT,
         QUEUED,
         IN_GAME,
-        END_GAME,
+        FINISHED,
     }
 
     public class Game
@@ -28,7 +28,7 @@ namespace ups_client
             {
                 if(GameState != GameStateEnum.IN_GAME)
                 {
-                    return "-";
+                    return Constants.fieldEmpty;
                 }
                 else if (PlayerPlaying == true)
                 {
@@ -53,8 +53,8 @@ namespace ups_client
 
         public Game()
         {
-            PlayerName = "-";
-            OpponentName = "-";
+            PlayerName = Constants.fieldEmpty;
+            OpponentName = Constants.fieldEmpty;
             IsPlayerWhite = true;
             PlayerPlaying = null;
             
@@ -67,7 +67,7 @@ namespace ups_client
                 }
             }
 
-            WinnerName = "-";
+            WinnerName = Constants.fieldEmpty;
             GameState = GameStateEnum.INIT;
         }
 
@@ -90,6 +90,20 @@ namespace ups_client
                 SelectedY = y;
                 GameFields[SelectedY, SelectedX].IsSelected = true;                
             }
+        }
+
+        public void UpdateGameboard(int[] gameboardEncoded)
+        {
+            int counter = 0;
+
+            for (int i = 0; i < gameboardLength; i++)
+            {
+                for (int j = 0; j < gameboardLength; j++)
+                {
+                    GameFields[i, j].SetEncodingBased(gameboardEncoded[counter]);
+                    counter++;
+                }
+            }            
         }
     }
 }

@@ -21,31 +21,31 @@ namespace ups_client
             IsSelected = false;
         }       
 
-        public void setEncodingBased(char code)
+        public void SetEncodingBased(int code)
         {
             switch(code)
             {
-                case '1':
+                case 1:
                     HasStone = false;
                     IsWhite = false;
                     IsKing = false;
                     break;
-                case '2':
+                case 2:
                     HasStone = true;
                     IsWhite = true;
                     IsKing = false;
                     break;
-                case '3':
+                case 3:
                     HasStone = true;
                     IsWhite = false;
                     IsKing = false;
                     break;
-                case '4':
+                case 4:
                     HasStone = true;
                     IsWhite = true;
                     IsKing = true;
                     break;
-                case '5':
+                case 5:
                     HasStone = true;
                     IsWhite = false;
                     IsKing = true;

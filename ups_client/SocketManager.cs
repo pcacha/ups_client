@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -96,9 +98,11 @@ namespace ups_client
                 }
                 */
 
+                Thread.Sleep(250);
+
                 if (socket.Available > 0)
                 {
-                    if(socket.Available > Constants.maxMsgLength)
+                    if(socket.Available > Constants.maxMsgBatchLength)
                     {
                         CloseSocket();
                     }
@@ -107,23 +111,30 @@ namespace ups_client
                     socket.Receive(dataChars, dataChars.Length, SocketFlags.None);
                     string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
 
-                    int endIdx = dataString.IndexOf(Constants.msgEnd[0]);
-                    if (endIdx == -1 || dataString[0] != Constants.msgStart[0])
-                    {
-                        CloseSocket();
-                    }
+                    Console.WriteLine("Socket - data on socket: " + dataString);
 
-                    string msg = dataString.Substring(0, endIdx + 1); 
-                    if (msg.Length >= Constants.minMsgLength)
-                    {
-                        Console.WriteLine("Received - msg: " + msg);
-                        HandleMessage(msg);
-                    }
-                    else
+                    MatchCollection matches = Regex.Matches(dataString, Constants.msgRegex);
+
+                    if(matches.Count == 0)
                     {
                         CloseSocket();
+                    }                                        
+
+                    foreach (Match match in matches)
+                    {
+                        string msg = match.Value;
+
+                        if (msg.Length >= Constants.minMsgLength && msg.Length <= Constants.maxMsgLength)
+                        {
+                            Console.WriteLine("Received - msg: " + msg);
+                            HandleMessage(msg);
+                        }
+                        else
+                        {
+                            CloseSocket();
+                        }
                     }
-                }                
+                }
             }
         }
 
@@ -132,7 +143,7 @@ namespace ups_client
             Console.WriteLine("Socket - error");
             Console.WriteLine("Application - close");
             socket.Close();
-            Application.Exit();
+            //Application.Exit();
         }
 
         private void HandleMessage(string msg)

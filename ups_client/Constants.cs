@@ -23,7 +23,8 @@ namespace ups_client
         public const string whiteKingPath = "img/white_king.png";
         public const int maxNameLen = 10;
 
-        public const int maxMsgLength = 250;
+        public const int maxMsgBatchLength = 500;
+        public const int maxMsgLength = 110;
         public const int minMsgLength = 4;
         public const string msgStart = "$";
         public const string msgSeparator = "|";
@@ -37,6 +38,8 @@ namespace ups_client
         public const string white = "WHITE";
         public const string black = "BLACK";
         public const string failed = "FAILED";
+        public const string fieldEmpty = "-";
+        public const string msgRegex = @"\" + msgStart + @"[^\" + msgStart + @"\" + msgEnd + @"]*\" + msgEnd;
 
         public const string invalidNameMsg = "Přezdívka není validní";
         public const string takenNameMsg = "Přezdívka je již zabraná"; 
