@@ -110,7 +110,6 @@ namespace ups_client
                     byte[] dataChars = new byte[socket.Available];
                     socket.Receive(dataChars, dataChars.Length, SocketFlags.None);
                     string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
-
                     Console.WriteLine("Socket - data on socket: " + dataString);
 
                     MatchCollection matches = Regex.Matches(dataString, Constants.msgRegex);

@@ -44,5 +44,7 @@ namespace ups_client
         public const string invalidNameMsg = "Přezdívka není validní";
         public const string takenNameMsg = "Přezdívka je již zabraná"; 
         public const string moveFailedMsg = "Byl zaznamenán neplatný tah!";
+        public const string winnerPopupMsg = "Zvítězil hráč ";
+        public const string drawPopupMsg = "Hra skončila remízou";
     }
 }

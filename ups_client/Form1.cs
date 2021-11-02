@@ -170,7 +170,7 @@ namespace ups_client
             int x = location.X / gameboardPanelSize;
             int y = location.Y / gameboardPanelSize;           
             
-            if(game.GameState == GameStateEnum.IN_GAME)
+            if(game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)
             {
                 if (!game.IsSelected)
                 {
@@ -178,11 +178,7 @@ namespace ups_client
                 }
                 else
                 {
-                    if (game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)
-                    {
-                        socketManager.Send(SendMsgUtils.Move(game.SelectedY, game.SelectedX, y, x));
-                    }
-
+                    socketManager.Send(SendMsgUtils.Move(game.SelectedY, game.SelectedX, y, x));
                     game.Select(-1, -1);
                 }
 
@@ -227,6 +223,12 @@ namespace ups_client
                 {
                     game.WinnerName = Constants.fieldEmpty;
                 }
+                else if (winner == Constants.msgNull + Constants.msgNull)
+                {
+                    game.WinnerName = Constants.fieldEmpty;
+                    game.GameState = GameStateEnum.FINISHED;
+                    MessageBox.Show(Constants.drawPopupMsg);
+                }
                 else
                 {
                     if(winner != game.PlayerName && winner != game.OpponentName)
@@ -237,6 +239,7 @@ namespace ups_client
                     {
                         game.WinnerName = winner;
                         game.GameState = GameStateEnum.FINISHED;
+                        MessageBox.Show(Constants.winnerPopupMsg + winner);
                     }
                 }
 
