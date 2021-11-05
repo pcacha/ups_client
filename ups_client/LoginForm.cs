@@ -59,6 +59,7 @@ namespace ups_client
             // check of valid game state and mesage validity
             if(game.GameState != GameStateEnum.INIT || msgParts.Length < 2)
             {
+                Console.WriteLine("Connect handling - bad game state or message parts count");
                 socketManager.CloseSocket();
             }
 
@@ -69,6 +70,7 @@ namespace ups_client
                     // check validity
                     if(msgParts.Length !=3 || (msgParts[2] != Constants.white && msgParts[2] != Constants.black))
                     {
+                        Console.WriteLine("Connect Ok - bad message parts count or invalid keywords");
                         socketManager.CloseSocket();
                     }
                     // set name and update game state
@@ -90,6 +92,7 @@ namespace ups_client
                     // for failed connection
                     if (msgParts.Length != 2)
                     {
+                        Console.WriteLine("Connect invalid - bad message parts count");
                         socketManager.CloseSocket();
                     }
                     // inform user that name is invalid
@@ -101,6 +104,7 @@ namespace ups_client
                     }));                    
                     break;
                 default:
+                    Console.WriteLine("Handle connect - no matching keyword");
                     socketManager.CloseSocket();
                     break;
             }           

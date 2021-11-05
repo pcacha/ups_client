@@ -232,6 +232,7 @@ namespace ups_client
 
                 if(gameboardEncoded == null)
                 {
+                    Console.WriteLine("Game handle - invalid encoded game board");
                     socketManager.CloseSocket();
                 }
 
@@ -268,6 +269,7 @@ namespace ups_client
                 {
                     if(winner != game.PlayerName && winner != game.OpponentName)
                     {
+                        Console.WriteLine("Handle game - winner is none of players");
                         socketManager.CloseSocket();
                     }
                     else
@@ -285,6 +287,7 @@ namespace ups_client
             }
             else
             {
+                Console.WriteLine("Handle game - bad game state or invalid message parts count");
                 socketManager.CloseSocket();
             }
         }
@@ -326,6 +329,7 @@ namespace ups_client
             }
             else
             {
+                Console.WriteLine("Move failed - invalid message parts count or bad game state or wrong keyword");
                 socketManager.CloseSocket();
             }
         }

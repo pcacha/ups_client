@@ -119,6 +119,7 @@ namespace ups_client
                 {
                     if(socket.Available > Constants.maxMsgBatchLength)
                     {
+                        Console.WriteLine("Socket - max batch length exceeded");
                         CloseSocket();
                     }
 
@@ -133,6 +134,7 @@ namespace ups_client
 
                     if(matches.Count == 0)
                     {
+                        Console.WriteLine("Regex - no message available");
                         CloseSocket();
                     }                                        
 
@@ -148,6 +150,7 @@ namespace ups_client
                         }
                         else
                         {
+                            Console.WriteLine("Message - invalid message length");
                             CloseSocket();
                         }
                     }
@@ -174,6 +177,7 @@ namespace ups_client
 
             if(msgParts.Length < 1)
             {
+                Console.WriteLine("Message - no message parts");
                 CloseSocket();
             }
 
@@ -190,6 +194,7 @@ namespace ups_client
                     Form.HandleMoveFailed(msgParts);
                     break;
                 default:
+                    Console.WriteLine("Handle message - invalid keyword");
                     CloseSocket();
                     break;
             }
