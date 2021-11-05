@@ -18,6 +18,7 @@ namespace ups_client
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // create main instances
             Game game = new Game();
             SocketManager socketManager = new SocketManager("127.0.0.1", 9999, game);
             Form1 form = new Form1(socketManager, game);
@@ -26,6 +27,7 @@ namespace ups_client
             socketManager.Form = form;
             socketManager.LoginForm = loginForm;
 
+            // start therad that listens to server
             Thread listenThread = new Thread(new ThreadStart(socketManager.Listen));
             listenThread.IsBackground = true;
             listenThread.Start();

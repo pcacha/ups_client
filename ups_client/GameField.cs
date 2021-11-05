@@ -6,13 +6,21 @@ using System.Threading.Tasks;
 
 namespace ups_client
 {
+    /*
+     * Class represents one field of game board 
+     */
     public class GameField
     {
+        // whteher field contains stone
         public bool HasStone { get; set; }
+        // is stone white
         public bool IsWhite { get; set; }
+        // is stone king
         public bool IsKing { get; set; }
+        // is field selected
         public bool IsSelected { get; set; }
 
+        // constructor
         public GameField()
         {
             HasStone = false;
@@ -21,6 +29,7 @@ namespace ups_client
             IsSelected = false;
         }       
 
+        // sets field based on code
         public void SetEncodingBased(int code)
         {
             switch(code)

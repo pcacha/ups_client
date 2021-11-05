@@ -10,13 +10,21 @@ using System.Windows.Forms;
 
 namespace ups_client
 {
+    /*
+     * Class represents game login form
+     */ 
     public partial class LoginForm : Form
     {
+        // socket manager
         private SocketManager socketManager;
+        // gmae board form
         private Form1 form;
+        // game state
         private Game game;
+        // player's nick
         private string nick;
 
+        // constructor
         public LoginForm(SocketManager socketManager, Form1 form, Game game)
         {
             InitializeComponent();
@@ -25,25 +33,30 @@ namespace ups_client
             this.game = game;
         }
 
+        // connect btn click event
         private void connectButton_Click(object sender, EventArgs e)
         {
             string nick = nameTextBox.Text;
 
             if(!ValidationUtils.ValidateLogin(nick))
             {
+                // show message when name is not valid
                 MessageBox.Show(Constants.invalidNameMsg);                
                 nameTextBox.Text = "";
             }
             else
             {
+                // send mesage to server when name is valid
                 connectButton.Enabled = false;
                 this.nick = nick;
                 socketManager.Send(SendMsgUtils.Login(nick));
             }
         }
 
+        // handles connect message from server
         internal void HandleConnect(string[] msgParts)
         {
+            // check of valid game state and mesage validity
             if(game.GameState != GameStateEnum.INIT || msgParts.Length < 2)
             {
                 socketManager.CloseSocket();
@@ -52,10 +65,13 @@ namespace ups_client
             switch(msgParts[1])
             {
                 case Constants.connectOk:
+                    // for ok message
+                    // check validity
                     if(msgParts.Length !=3 || (msgParts[2] != Constants.white && msgParts[2] != Constants.black))
                     {
                         socketManager.CloseSocket();
                     }
+                    // set name and update game state
                     game.GameState = GameStateEnum.QUEUED;
                     game.PlayerName = nick;
                     if(msgParts[2] == Constants.white)
@@ -66,14 +82,17 @@ namespace ups_client
                     {
                         game.IsPlayerWhite = false;
                     }
+                    // start game board form
                     Invoke(new Action(() => { Hide(); }));
                     Invoke(new Action(() => { form.Show(); }));
                     break;
                 case Constants.connectInvalid:
+                    // for failed connection
                     if (msgParts.Length != 2)
                     {
                         socketManager.CloseSocket();
                     }
+                    // inform user that name is invalid
                     MessageBox.Show(Constants.takenNameMsg);
                     Invoke(new Action(() => 
                     {

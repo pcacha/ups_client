@@ -11,16 +11,26 @@ using System.Windows.Forms;
 
 namespace ups_client
 {
+    /*
+     * Class representing 
+     */
     public class SocketManager
     {
+        // port
         private int port;
+        // ip adress
         private string ipAdress;
+        // game state
         private Game game;
+        // socket
         private Socket socket;
 
+        // game board form
         public Form1 Form { get; set; }
+        // login form
         public LoginForm LoginForm { get; set; }
 
+        // constructor
         public SocketManager(string ipAdress, int port, Game game)
         {
             this.ipAdress = ipAdress;
@@ -30,16 +40,19 @@ namespace ups_client
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
+                // try connect
                 socket.Connect(IPAddress.Parse(ipAdress), port);
                 Console.WriteLine("Connect - OK");
             }
             catch
             {
+                // if connection failed
                 Console.WriteLine("Connect - error");
                 Application.Exit();
             }
         }
 
+        // sends message to server
         public void Send(string msg)
         {
             byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
@@ -47,6 +60,7 @@ namespace ups_client
             Console.WriteLine("Send - msg: " + msg);
         }
 
+        // listening loop
         public void Listen()
         {            
             while(socket.Connected)
@@ -100,6 +114,7 @@ namespace ups_client
 
                 Thread.Sleep(250);
 
+                // only if something is available
                 if (socket.Available > 0)
                 {
                     if(socket.Available > Constants.maxMsgBatchLength)
@@ -107,11 +122,13 @@ namespace ups_client
                         CloseSocket();
                     }
 
+                    // read data from file descriptor
                     byte[] dataChars = new byte[socket.Available];
                     socket.Receive(dataChars, dataChars.Length, SocketFlags.None);
                     string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
                     Console.WriteLine("Socket - data on socket: " + dataString);
 
+                    // split data based on message regex
                     MatchCollection matches = Regex.Matches(dataString, Constants.msgRegex);
 
                     if(matches.Count == 0)
@@ -123,6 +140,7 @@ namespace ups_client
                     {
                         string msg = match.Value;
 
+                        // if message has the righr length, process it
                         if (msg.Length >= Constants.minMsgLength && msg.Length <= Constants.maxMsgLength)
                         {
                             Console.WriteLine("Received - msg: " + msg);
@@ -137,6 +155,7 @@ namespace ups_client
             }
         }
 
+        // closes socket and application
         public void CloseSocket()
         {
             Console.WriteLine("Socket - error");
@@ -145,8 +164,10 @@ namespace ups_client
             //Application.Exit();
         }
 
+        // handles incoming message
         private void HandleMessage(string msg)
-        {            
+        {      
+            // remove start stop chars
             msg = msg.Substring(1, msg.Length - 2);
 
             string[] msgParts = msg.Split(Constants.msgSeparator[0]);
@@ -156,6 +177,7 @@ namespace ups_client
                 CloseSocket();
             }
 
+            // call method based on message type
             switch(msgParts[0])
             {
                 case Constants.connect:                    

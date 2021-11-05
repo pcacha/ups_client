@@ -11,13 +11,21 @@ using static ups_client.Constants;
 
 namespace ups_client
 {
+    /*
+     * Class represents main game board form
+     */
     public partial class Form1 : Form
     {
+        // panel with game board
         private Panel gamePanel;
+        // representation of game
         private Game game;
+        // fields of game board
         private Panel[,] panels;
+        // socket manager
         private SocketManager socketManager;
 
+        // constructor
         public Form1(SocketManager socketManager, Game game)
         {
             InitializeComponent();
@@ -26,14 +34,18 @@ namespace ups_client
             this.socketManager = socketManager;
         }
 
+        // on load event
         private void Form1_Load(object sender, EventArgs e)
         {
+            // create gameboard and print actual state
             CreateGameboard();          
             PrintGame();              
         }        
 
+        // prepare game board for playing
         private void CreateGameboard()
         {
+            // create main panel, set its properties and add it to form
             gamePanel = new Panel();
             gamePanel.Height = gameboardPanelSize * gameboardLength;
             gamePanel.Width = gameboardPanelSize * gameboardLength;
@@ -44,12 +56,15 @@ namespace ups_client
             CreatePanels();
         }
 
+        // creates fields of game board
         private void CreatePanels()
         {
+            // for all fields in game board
             for (int i = 0; i < gameboardLength; i++)
             {
                 for (int j = 0; j < gameboardLength; j++)
                 {                    
+                    // create panel
                     Panel p = new Panel();
                     p.Click += new EventHandler(gameboardPanel_Click);
                     p.Height = gameboardPanelSize;
@@ -58,6 +73,7 @@ namespace ups_client
                     p.Left = j * gameboardPanelSize;
                     panels[i, j] = p;
 
+                    // set its color and add it to form
                     if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
                     {
                         p.BackColor = whiteGameboardPanelColor;
@@ -72,16 +88,19 @@ namespace ups_client
             }
         }
 
+        // prints the game based on actual state
         public void PrintGame()
         {
             PrintGameboard();
             PrintSideInfo();
         }
 
+        // prints gameboard based on current game state
         private void PrintGameboard()
         {           
             GameField[,] gameFields = game.GameFields;            
 
+            // for each field of game board
             for (int i = 0; i < gameboardLength; i++)
             {
                 for (int j = 0; j < gameboardLength; j++)
@@ -89,6 +108,7 @@ namespace ups_client
                     GameField gf = gameFields[i, j];
                     Panel p = panels[i, j];                   
 
+                    // set field color
                     if (gf.IsSelected)
                     {
                         p.BackColor = selectedGameboardPanelColor;
@@ -102,6 +122,7 @@ namespace ups_client
                         p.BackColor = blackGameboardPanelColor;
                     }
 
+                    // set background image if field contains stone
                     if (gf.HasStone)
                     {
                         if (gf.IsKing)
@@ -130,12 +151,14 @@ namespace ups_client
                     }
                     else
                     {
+                        // delete image if there is no stone
                         p.BackgroundImage = null;
                     }
                 }                
             }
         }
         
+        // prints side info based on current state
         private void PrintSideInfo()
         {
             playerNameLabel.Text = game.PlayerName;
@@ -145,23 +168,28 @@ namespace ups_client
 
             if(game.IsPlayerWhite)
             {
+                // for white player
                 playerStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
                 opponentStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
             }
             else
             {
+                // for black player
                 playerStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
                 opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
             }
            
         }        
 
+        // delte selection btn event
         private void clearSelectionBtn_Click(object sender, EventArgs e)
         {
+            // select no field and print the game
             game.Select(-1, -1);
             PrintGame();
         }
 
+        // filed of game board click event
         private void gameboardPanel_Click(object sender, EventArgs e)
         {
             GameField[,] gameFields = game.GameFields;
@@ -170,14 +198,17 @@ namespace ups_client
             int x = location.X / gameboardPanelSize;
             int y = location.Y / gameboardPanelSize;           
             
+            // only in game and if player is playing
             if(game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)
             {
+                // select field
                 if (!game.IsSelected)
                 {
                     game.Select(x, y);
                 }
                 else
                 {
+                    // send move to server
                     socketManager.Send(SendMsgUtils.Move(game.SelectedY, game.SelectedX, y, x));
                     game.Select(-1, -1);
                 }
@@ -186,10 +217,12 @@ namespace ups_client
             }
         }
 
+        // handles game state send by server
         public void HandleGame(string[] msgParts)
-        {
+        {            
             if((game.GameState == GameStateEnum.IN_GAME || game.GameState == GameStateEnum.QUEUED) && msgParts.Length == 5)
             {
+                // update game state
                 if(game.GameState == GameStateEnum.QUEUED)
                 {
                     game.GameState = GameStateEnum.IN_GAME;
@@ -204,6 +237,7 @@ namespace ups_client
 
                 game.OpponentName = msgParts[1];
 
+                // set playing player
                 string playing = msgParts[2];
                 if(playing == Constants.msgNull)
                 {
@@ -218,6 +252,7 @@ namespace ups_client
                     game.PlayerPlaying = false;
                 }
 
+                // set winner
                 string winner = msgParts[3];
                 if(winner == Constants.msgNull)
                 {
@@ -243,6 +278,7 @@ namespace ups_client
                     }
                 }
 
+                // update game and print it
                 game.UpdateGameboard(gameboardEncoded);
                 game.Select(-1, -1);
                 PrintGame();
@@ -253,8 +289,10 @@ namespace ups_client
             }
         }
 
+        // convert game board encoded string ot int array
         private int[] GetEncodedGameboard(string gameboardString)
         {
+            // validate
             if(gameboardString.Length != Constants.gameboardLength * Constants.gameboardLength)
             {
                 return null;
@@ -262,8 +300,10 @@ namespace ups_client
 
             int[] gameboardEncoded = new int[Constants.gameboardLength * Constants.gameboardLength];
 
+            // foreach string char
             for(int i = 0; i < gameboardString.Length; i++)
             {
+                // validate permitted chars
                 if(gameboardString[i] != '1' && gameboardString[i] != '2' && gameboardString[i] != '3' && gameboardString[i] != '4' && gameboardString[i] != '5')
                 {
                     return null;
@@ -276,8 +316,10 @@ namespace ups_client
             return gameboardEncoded;
         }
 
+        // handle move failed message send by server
         public void HandleMoveFailed(string[] msgParts)
         {
+            // validte game state and message
             if(game.GameState == GameStateEnum.IN_GAME && msgParts.Length == 2 && msgParts[1] == Constants.failed)
             {
                 MessageBox.Show(Constants.moveFailedMsg);
