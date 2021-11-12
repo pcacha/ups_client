@@ -29,5 +29,11 @@ namespace ups_client
         {
             return Constants.msgStart + Constants.leave + Constants.msgEnd;
         }
+
+        // returns play again message
+        internal static string PlayAgain()
+        {
+            return Constants.msgStart + Constants.playAgain + Constants.msgEnd;
+        }
     }
 }

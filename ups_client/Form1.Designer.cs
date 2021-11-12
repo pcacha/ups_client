@@ -39,6 +39,7 @@ namespace ups_client
             this.playingNameLabel = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.winnerNameLabel = new System.Windows.Forms.Label();
+            this.playAgainBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // playerNameLabel
@@ -140,11 +141,23 @@ namespace ups_client
             this.winnerNameLabel.TabIndex = 10;
             this.winnerNameLabel.Text = "-";
             // 
+            // playAgainBtn
+            // 
+            this.playAgainBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.playAgainBtn.Location = new System.Drawing.Point(612, 396);
+            this.playAgainBtn.Name = "playAgainBtn";
+            this.playAgainBtn.Size = new System.Drawing.Size(299, 85);
+            this.playAgainBtn.TabIndex = 11;
+            this.playAgainBtn.Text = "Hrát znovu";
+            this.playAgainBtn.UseVisualStyleBackColor = true;
+            this.playAgainBtn.Click += new System.EventHandler(this.playAgainBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(946, 592);
+            this.Controls.Add(this.playAgainBtn);
             this.Controls.Add(this.winnerNameLabel);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.playingNameLabel);
@@ -178,6 +191,7 @@ namespace ups_client
         private System.Windows.Forms.Label playingNameLabel;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label winnerNameLabel;
+        private System.Windows.Forms.Button playAgainBtn;
     }
 }
 

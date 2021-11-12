@@ -70,6 +70,8 @@ namespace ups_client
         public const string failed = "FAILED";
         // leave key word
         public const string leave = "LEAVE";
+        // play again key word
+        public const string playAgain = "PLAYAGAIN";
         // empty field representation
         public const string fieldEmpty = "-";
         // message regex structure
@@ -83,6 +85,6 @@ namespace ups_client
         // winner notification
         public const string winnerPopupMsg = "Zvítězil hráč ";
         // draw notification
-        public const string drawPopupMsg = "Hra skončila remízou";
+        public const string drawPopupMsg = "Hra skončila remízou";      
     }
 }

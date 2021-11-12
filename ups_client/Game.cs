@@ -124,5 +124,25 @@ namespace ups_client
                 }
             }            
         }
+
+        // reset game to init state
+        public void Reset()
+        {            
+            OpponentName = Constants.fieldEmpty;
+            IsPlayerWhite = true;
+            PlayerPlaying = null;
+            WinnerName = Constants.fieldEmpty;
+            GameState = GameStateEnum.INIT;
+            Select(-1, -1);
+
+            // reset gameboard
+            for (int i = 0; i < gameboardLength; i++)
+            {
+                for (int j = 0; j < gameboardLength; j++)
+                {
+                    GameFields[i, j].Reset();
+                }
+            }
+        }
     }
 }

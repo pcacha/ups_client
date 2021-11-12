@@ -24,6 +24,8 @@ namespace ups_client
         private Panel[,] panels;
         // socket manager
         private SocketManager socketManager;
+        // if leave was send
+        private bool leaveSend;
 
         private Image whiteStoneImg;
         private Image blackStoneImg;
@@ -37,6 +39,7 @@ namespace ups_client
             this.game = game;
             panels = new Panel[gameboardLength, gameboardLength];
             this.socketManager = socketManager;
+            leaveSend = false;
 
             whiteStoneImg = Image.FromFile(whiteStonePath);
             blackStoneImg = Image.FromFile(blackStonePath);
@@ -58,6 +61,7 @@ namespace ups_client
             // create main panel, set its properties and add it to form
             Invoke(new Action(() => 
             {
+                playAgainBtn.Visible = false;
                 gamePanel = new Panel();
                 gamePanel.Height = gameboardPanelSize * gameboardLength;
                 gamePanel.Width = gameboardPanelSize * gameboardLength;
@@ -200,7 +204,7 @@ namespace ups_client
                     opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
                 }
             }));          
-        }        
+        }
 
         // delte selection btn event
         private void clearSelectionBtn_Click(object sender, EventArgs e)
@@ -284,6 +288,7 @@ namespace ups_client
                 {
                     game.WinnerName = Constants.fieldEmpty;
                     game.GameState = GameStateEnum.FINISHED;
+                    playAgainBtn.Visible = true;
                     MessageBox.Show(Constants.drawPopupMsg);
                 }
                 else
@@ -297,6 +302,7 @@ namespace ups_client
                     {
                         game.WinnerName = winner;
                         game.GameState = GameStateEnum.FINISHED;
+                        playAgainBtn.Visible = true;
                         MessageBox.Show(Constants.winnerPopupMsg + winner);
                     }
                 }
@@ -358,8 +364,46 @@ namespace ups_client
         // inform server that client leaves game
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // send leave
-            socketManager.Send(SendMsgUtils.Leave());
+            // send leave if was not send before
+            if(!leaveSend)
+            {
+                socketManager.Send(SendMsgUtils.Leave());
+                leaveSend = true;
+            }           
+            Application.Exit();
+        }
+
+        // click to start new game
+        private void playAgainBtn_Click(object sender, EventArgs e)
+        {
+            playAgainBtn.Visible = false;
+            game.Reset();
+            socketManager.Send(SendMsgUtils.PlayAgain());
+        }
+
+        // handles play again response
+        public void HandlePlayAgain(string[] msgParts)
+        {
+            // check of valid game state and mesage validity
+            if (game.GameState != GameStateEnum.INIT || msgParts.Length != 3 || msgParts[1] != Constants.connectOk || 
+                (msgParts[2] != Constants.white && msgParts[2] != Constants.black))
+            {
+                Console.WriteLine("PlayAgain handling - bad game state, message parts count or keywords");
+                socketManager.CloseSocket();
+            }
+                        
+            // update game state
+            game.GameState = GameStateEnum.QUEUED;           
+            if (msgParts[2] == Constants.white)
+            {
+                game.IsPlayerWhite = true;
+            }
+            else
+            {
+                game.IsPlayerWhite = false;
+            }
+
+            PrintGame();
         }
     }
 }

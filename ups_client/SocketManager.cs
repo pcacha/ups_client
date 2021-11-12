@@ -193,6 +193,9 @@ namespace ups_client
                 case Constants.move:
                     Form.HandleMoveFailed(msgParts);
                     break;
+                case Constants.playAgain:
+                    Form.HandlePlayAgain(msgParts);
+                    break;
                 default:
                     Console.WriteLine("Handle message - invalid keyword");
                     CloseSocket();

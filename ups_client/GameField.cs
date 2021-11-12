@@ -23,11 +23,17 @@ namespace ups_client
         // constructor
         public GameField()
         {
+            Reset();
+        }       
+
+        // resets gamefield to init state
+        public void Reset()
+        {
             HasStone = false;
             IsWhite = false;
             IsKing = false;
             IsSelected = false;
-        }       
+        }
 
         // sets field based on code
         public void SetEncodingBased(int code)
