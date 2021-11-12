@@ -68,6 +68,8 @@ namespace ups_client
         public const string black = "BLACK";
         // failed key word
         public const string failed = "FAILED";
+        // leave key word
+        public const string leave = "LEAVE";
         // empty field representation
         public const string fieldEmpty = "-";
         // message regex structure

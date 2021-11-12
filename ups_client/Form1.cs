@@ -354,5 +354,12 @@ namespace ups_client
                 socketManager.CloseSocket();
             }
         }
+
+        // inform server that client leaves game
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // send leave
+            socketManager.Send(SendMsgUtils.Leave());
+        }
     }
 }

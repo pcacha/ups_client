@@ -23,5 +23,11 @@ namespace ups_client
             return Constants.msgStart + Constants.move + Constants.msgSeparator + sourceY + Constants.msgSeparator + sourceX + Constants.msgSeparator + 
                 goalY + Constants.msgSeparator + goalX + Constants.msgEnd;
         }
+
+        // returns leave message
+        public static string Leave()
+        {
+            return Constants.msgStart + Constants.leave + Constants.msgEnd;
+        }
     }
 }
