@@ -25,6 +25,11 @@ namespace ups_client
         // socket manager
         private SocketManager socketManager;
 
+        private Image whiteStoneImg;
+        private Image blackStoneImg;
+        private Image whiteKingImg;
+        private Image blackKingImg;
+
         // constructor
         public Form1(SocketManager socketManager, Game game)
         {
@@ -32,6 +37,11 @@ namespace ups_client
             this.game = game;
             panels = new Panel[gameboardLength, gameboardLength];
             this.socketManager = socketManager;
+
+            whiteStoneImg = Image.FromFile(whiteStonePath);
+            blackStoneImg = Image.FromFile(blackStonePath);
+            whiteKingImg = Image.FromFile(whiteKingPath);
+            blackKingImg = Image.FromFile(blackKingPath);
         }
 
         // on load event
@@ -46,46 +56,52 @@ namespace ups_client
         private void CreateGameboard()
         {
             // create main panel, set its properties and add it to form
-            gamePanel = new Panel();
-            gamePanel.Height = gameboardPanelSize * gameboardLength;
-            gamePanel.Width = gameboardPanelSize * gameboardLength;
-            gamePanel.Top = topMargin;
-            gamePanel.Left = leftMargin;           
-            gamePanel.Cursor = Cursors.Hand;
-            this.Controls.Add(gamePanel);
+            Invoke(new Action(() => 
+            {
+                gamePanel = new Panel();
+                gamePanel.Height = gameboardPanelSize * gameboardLength;
+                gamePanel.Width = gameboardPanelSize * gameboardLength;
+                gamePanel.Top = topMargin;
+                gamePanel.Left = leftMargin;
+                gamePanel.Cursor = Cursors.Hand;
+                this.Controls.Add(gamePanel);
+            }));            
             CreatePanels();
         }
 
         // creates fields of game board
         private void CreatePanels()
         {
-            // for all fields in game board
-            for (int i = 0; i < gameboardLength; i++)
+            Invoke(new Action(() =>
             {
-                for (int j = 0; j < gameboardLength; j++)
-                {                    
-                    // create panel
-                    Panel p = new Panel();
-                    p.Click += new EventHandler(gameboardPanel_Click);
-                    p.Height = gameboardPanelSize;
-                    p.Width = gameboardPanelSize;
-                    p.Top = i * gameboardPanelSize;
-                    p.Left = j * gameboardPanelSize;
-                    panels[i, j] = p;
-
-                    // set its color and add it to form
-                    if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                // for all fields in game board
+                for (int i = 0; i < gameboardLength; i++)
+                {
+                    for (int j = 0; j < gameboardLength; j++)
                     {
-                        p.BackColor = whiteGameboardPanelColor;
+                        // create panel
+                        Panel p = new Panel();
+                        p.Click += new EventHandler(gameboardPanel_Click);
+                        p.Height = gameboardPanelSize;
+                        p.Width = gameboardPanelSize;
+                        p.Top = i * gameboardPanelSize;
+                        p.Left = j * gameboardPanelSize;
+                        panels[i, j] = p;
+
+                        // set its color and add it to form
+                        if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                        {
+                            p.BackColor = whiteGameboardPanelColor;
+                        }
+                        else
+                        {
+                            p.BackColor = blackGameboardPanelColor;
+                        }
+
+                        gamePanel.Controls.Add(p);
                     }
-                    else
-                    {
-                        p.BackColor = blackGameboardPanelColor;
-                    }                                       
-
-                    gamePanel.Controls.Add(p);
                 }
-            }
+            }));            
         }
 
         // prints the game based on actual state
@@ -97,88 +113,93 @@ namespace ups_client
 
         // prints gameboard based on current game state
         private void PrintGameboard()
-        {           
-            GameField[,] gameFields = game.GameFields;            
-
-            // for each field of game board
-            for (int i = 0; i < gameboardLength; i++)
+        {
+            Invoke(new Action(() =>
             {
-                for (int j = 0; j < gameboardLength; j++)
+                GameField[,] gameFields = game.GameFields;
+
+                // for each field of game board
+                for (int i = 0; i < gameboardLength; i++)
                 {
-                    GameField gf = gameFields[i, j];
-                    Panel p = panels[i, j];                   
+                    for (int j = 0; j < gameboardLength; j++)
+                    {
+                        GameField gf = gameFields[i, j];
+                        Panel p = panels[i, j];
 
-                    // set field color
-                    if (gf.IsSelected)
-                    {
-                        p.BackColor = selectedGameboardPanelColor;
-                    }
-                    else if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
-                    {
-                        p.BackColor = whiteGameboardPanelColor;
-                    }
-                    else
-                    {
-                        p.BackColor = blackGameboardPanelColor;
-                    }
-
-                    // set background image if field contains stone
-                    if (gf.HasStone)
-                    {
-                        if (gf.IsKing)
+                        // set field color
+                        if (gf.IsSelected)
                         {
-                            if (gf.IsWhite)
-                            {
-                                p.BackgroundImage = Image.FromFile(whiteKingPath);
-                            }
-                            else
-                            {
-                                p.BackgroundImage = Image.FromFile(blackKingPath);
-                            }
+                            p.BackColor = selectedGameboardPanelColor;
+                        }
+                        else if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
+                        {
+                            p.BackColor = whiteGameboardPanelColor;
                         }
                         else
                         {
-                            if (gf.IsWhite)
+                            p.BackColor = blackGameboardPanelColor;
+                        }
+
+                        // set background image if field contains stone
+                        if (gf.HasStone)
+                        {
+                            if (gf.IsKing)
                             {
-                                p.BackgroundImage = Image.FromFile(whiteStonePath);
+                                if (gf.IsWhite)
+                                {
+                                    p.BackgroundImage = whiteKingImg;
+                                }
+                                else
+                                {
+                                    p.BackgroundImage = blackKingImg;
+                                }
                             }
                             else
                             {
-                                p.BackgroundImage = Image.FromFile(blackStonePath);
+                                if (gf.IsWhite)
+                                {
+                                    p.BackgroundImage = whiteStoneImg;
+                                }
+                                else
+                                {
+                                    p.BackgroundImage = blackStoneImg;
+                                }
                             }
+                            p.BackgroundImageLayout = ImageLayout.Center;
                         }
-                        p.BackgroundImageLayout = ImageLayout.Center;
+                        else
+                        {
+                            // delete image if there is no stone
+                            p.BackgroundImage = null;
+                        }
                     }
-                    else
-                    {
-                        // delete image if there is no stone
-                        p.BackgroundImage = null;
-                    }
-                }                
-            }
+                }
+            }));            
         }
         
         // prints side info based on current state
         private void PrintSideInfo()
         {
-            playerNameLabel.Text = game.PlayerName;
-            opponentNameLabel.Text = game.OpponentName;
-            playingNameLabel.Text = game.PlayingName;
-            winnerNameLabel.Text = game.WinnerName;
+            Invoke(new Action(() =>
+            {
+                playerNameLabel.Text = game.PlayerName;
+                opponentNameLabel.Text = game.OpponentName;
+                playingNameLabel.Text = game.PlayingName;
+                winnerNameLabel.Text = game.WinnerName;
 
-            if(game.IsPlayerWhite)
-            {
-                // for white player
-                playerStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
-                opponentStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
-            }
-            else
-            {
-                // for black player
-                playerStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
-                opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
-            }
-           
+                if (game.IsPlayerWhite)
+                {
+                    // for white player
+                    playerStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
+                    opponentStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
+                }
+                else
+                {
+                    // for black player
+                    playerStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
+                    opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
+                }
+            }));          
         }        
 
         // delte selection btn event
