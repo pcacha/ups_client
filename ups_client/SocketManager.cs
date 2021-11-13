@@ -68,7 +68,10 @@ namespace ups_client
                 // server is accessible
                 byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
                 socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
-                Console.WriteLine("Send - msg: " + msg);
+                if(!msg.Contains(Constants.pong))
+                {
+                    Console.WriteLine("Send - msg: " + msg);
+                }
             }
             else
             {
@@ -145,7 +148,11 @@ namespace ups_client
                     byte[] dataChars = new byte[socket.Available];
                     socket.Receive(dataChars, dataChars.Length, SocketFlags.None);
                     string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
-                    Console.WriteLine("Socket - data on socket: " + dataString);
+                    if (!dataString.Contains(Constants.ping))
+                    {
+                        Console.WriteLine("Socket - data on socket: " + dataString);
+                    }
+                        
 
                     // split data based on message regex
                     MatchCollection matches = Regex.Matches(dataString, Constants.msgRegex);
@@ -163,7 +170,10 @@ namespace ups_client
                         // if message has the righr length, process it
                         if (msg.Length >= Constants.minMsgLength && msg.Length <= Constants.maxMsgLength)
                         {
-                            Console.WriteLine("Received - msg: " + msg);
+                            if (!msg.Contains(Constants.ping))
+                            {
+                                Console.WriteLine("Received - msg: " + msg);
+                            }
                             HandleMessage(msg);
                         }
                         else
@@ -240,10 +250,10 @@ namespace ups_client
                 CloseSocket();
             }
 
-            if(!game.ServerOnline)
+            game.LastPingTimestamp = DateTime.Now;
+            if (!game.ServerOnline)
             {
-                // update server accessibility in gui
-                game.LastPingTimestamp = DateTime.Now;
+                // update server accessibility in gui               
                 game.ServerOnline = true;
                 UpdateGuiOnAccessibilityChange();
             }  
@@ -281,7 +291,7 @@ namespace ups_client
                 // if distinction exceeded max allowed value
                 if(distinction.TotalMilliseconds > Constants.maxPingDelay)
                 {
-                    game.ServerOnline = false;
+                    game.ServerOnline = false;                   
                     UpdateGuiOnAccessibilityChange();
                 }
             }            

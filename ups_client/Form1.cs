@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ups_client.Constants;
@@ -309,7 +310,7 @@ namespace ups_client
                     game.WinnerName = Constants.fieldEmpty;
                     game.GameState = GameStateEnum.FINISHED;
                     playAgainBtn.Visible = true;
-                    MessageBox.Show(Constants.drawPopupMsg);
+                    new Thread(() => MessageBox.Show(Constants.drawPopupMsg)).Start();                    
                 }
                 else
                 {
@@ -323,7 +324,7 @@ namespace ups_client
                         game.WinnerName = winner;
                         game.GameState = GameStateEnum.FINISHED;
                         playAgainBtn.Visible = true;
-                        MessageBox.Show(Constants.winnerPopupMsg + winner);
+                        new Thread(() => MessageBox.Show(Constants.winnerPopupMsg + winner)).Start();                        
                     }
                 }
 
@@ -372,7 +373,7 @@ namespace ups_client
             // validte game state and message
             if(game.GameState == GameStateEnum.IN_GAME && msgParts.Length == 2 && msgParts[1] == Constants.failed)
             {
-                MessageBox.Show(Constants.moveFailedMsg);
+                new Thread(() => MessageBox.Show(Constants.moveFailedMsg)).Start();                
             }
             else
             {

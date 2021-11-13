@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -42,7 +43,7 @@ namespace ups_client
             if(!ValidationUtils.ValidateLogin(nick))
             {
                 // show message when name is not valid
-                MessageBox.Show(Constants.invalidNameMsg);                
+                new Thread(() => MessageBox.Show(Constants.invalidNameMsg)).Start();                               
                 nameTextBox.Text = "";
             }
             else
@@ -97,7 +98,7 @@ namespace ups_client
                         socketManager.CloseSocket();
                     }
                     // inform user that name is invalid
-                    MessageBox.Show(Constants.takenNameMsg);
+                    new Thread(() => MessageBox.Show(Constants.takenNameMsg)).Start();                    
                     Invoke(new Action(() => 
                     {
                         nameTextBox.Text = "";
