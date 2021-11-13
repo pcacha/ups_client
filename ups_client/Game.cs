@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,11 +24,16 @@ namespace ups_client
     {
         // name of player
         public string PlayerName { get; set; }
+        // whether server is accessible
+        public bool ServerOnline { get; set; }
+        // last time server pinged
+        public DateTime LastPingTimestamp { get; set; }
         // name of player's opponent
         public string OpponentName { get; set; }
+        // whether is opponent online
+        public bool OpponentOnline { get; set; }
         // color of player
-        public bool IsPlayerWhite { get; set; }
-
+        public bool IsPlayerWhite { get; set; }       
         // is logged in player on his turn
         public bool? PlayerPlaying { get; set; }
         // name of playing player
@@ -67,7 +73,10 @@ namespace ups_client
         public Game()
         {
             PlayerName = Constants.fieldEmpty;
+            ServerOnline = true;
+            LastPingTimestamp = DateTime.Now;
             OpponentName = Constants.fieldEmpty;
+            OpponentOnline = true;
             IsPlayerWhite = true;
             PlayerPlaying = null;
             
@@ -129,6 +138,7 @@ namespace ups_client
         public void Reset()
         {            
             OpponentName = Constants.fieldEmpty;
+            OpponentOnline = true;
             IsPlayerWhite = true;
             PlayerPlaying = null;
             WinnerName = Constants.fieldEmpty;

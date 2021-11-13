@@ -191,6 +191,26 @@ namespace ups_client
                 playingNameLabel.Text = game.PlayingName;
                 winnerNameLabel.Text = game.WinnerName;
 
+                // set color of label based on whether server is accessible or not
+                if (game.ServerOnline)
+                {
+                    playerNameLabel.ForeColor = Color.Green;
+                }
+                else
+                {
+                    playerNameLabel.ForeColor = Color.Red;
+                }
+
+                // set color of label based on whether opponent is online or not
+                if (game.OpponentOnline)
+                {
+                    opponentNameLabel.ForeColor = Color.Green;
+                }
+                else
+                {
+                    opponentNameLabel.ForeColor = Color.Red;
+                }
+
                 if (game.IsPlayerWhite)
                 {
                     // for white player
@@ -204,7 +224,7 @@ namespace ups_client
                     opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
                 }
             }));          
-        }
+        }        
 
         // delte selection btn event
         private void clearSelectionBtn_Click(object sender, EventArgs e)
@@ -403,6 +423,36 @@ namespace ups_client
                 game.IsPlayerWhite = false;
             }
 
+            PrintGame();
+        }
+
+        // handles opponent online message
+        public void HandleOpponentOnline(string[] msgParts)
+        {
+            // check of valid game state and mesage validity
+            if (game.GameState != GameStateEnum.IN_GAME || msgParts.Length != 1)
+            {
+                Console.WriteLine("Opponent online handling - bad game state or message parts count");
+                socketManager.CloseSocket();
+            }
+
+            // set online and print game
+            game.OpponentOnline = true;
+            PrintGame();
+        }
+
+        // handles opponent offline message
+        public void HandleOpponentOffline(string[] msgParts)
+        {
+            // check of valid game state and mesage validity
+            if (game.GameState != GameStateEnum.IN_GAME || msgParts.Length != 1)
+            {
+                Console.WriteLine("Opponent offline handling - bad game state or message parts count");
+                socketManager.CloseSocket();
+            }
+
+            // set offline and print game
+            game.OpponentOnline = false;
             PrintGame();
         }
     }

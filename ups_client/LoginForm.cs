@@ -31,6 +31,7 @@ namespace ups_client
             this.socketManager = socketManager;
             this.form = form;
             this.game = game;
+            onlineLabel.ForeColor = Color.Green;
         }
 
         // connect btn click event
@@ -86,7 +87,7 @@ namespace ups_client
                     }
                     // start game board form
                     Invoke(new Action(() => { Hide(); }));
-                    Invoke(new Action(() => { form.Show(); }));
+                    Invoke(new Action(() => { form.Show(); Program.LoginFormOpened = false; }));
                     break;
                 case Constants.connectInvalid:
                     // for failed connection
@@ -108,6 +109,24 @@ namespace ups_client
                     socketManager.CloseSocket();
                     break;
             }           
+        }
+
+        // changes the color of online label based on server accessibility
+        internal void UpdateServerOnline()
+        {
+            Invoke(new Action(() => 
+            { 
+                // if server is online
+                if(game.ServerOnline)
+                {
+                    onlineLabel.ForeColor = Color.Green;
+                }
+                else
+                {
+                    // if server is not online
+                    onlineLabel.ForeColor = Color.Red;
+                }               
+            }));
         }
     }
 }

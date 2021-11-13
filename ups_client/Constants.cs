@@ -22,6 +22,10 @@ namespace ups_client
         public const int gameboardPanelSize = 70;
         // game board stone size [pixels]
         public const int gameboardStoneSize = 50;
+        // timer event repeat time in [ms]
+        public const double serverAccessibilityTimerRepeatTime = 250;
+        // determines the max delay of ping, if this limit is exceeded, server is considered offline
+        public const int maxPingDelay = 1500;
         // color for black field of game board
         public static Color blackGameboardPanelColor = Color.FromArgb(182, 135, 107);
         // color for white field of game board
@@ -71,7 +75,15 @@ namespace ups_client
         // leave key word
         public const string leave = "LEAVE";
         // play again key word
-        public const string playAgain = "PLAYAGAIN";
+        public const string playAgain = "PLAY_AGAIN";
+        // ping keyword
+        public const string ping = "PING";
+        // pong keyword
+        public const string pong = "PONG";
+        // opponent offline key word
+        public const string opponentOffline = "OPPONENT_OFFLINE";
+        // opponent online key word
+        public const string opponentOnline = "OPPONENT_ONLINE";
         // empty field representation
         public const string fieldEmpty = "-";
         // message regex structure

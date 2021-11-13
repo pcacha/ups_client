@@ -7,7 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
+using Timer = System.Timers.Timer;
 
 namespace ups_client
 {
@@ -50,14 +52,30 @@ namespace ups_client
                 Console.WriteLine("Connect - error");
                 Application.Exit();
             }
+
+            // start timer for evaluating server accessiblity
+            Timer serverAccessiblityTimer = new Timer();
+            serverAccessiblityTimer.Elapsed += new ElapsedEventHandler(CheckServerAccessibility);
+            serverAccessiblityTimer.Interval = Constants.serverAccessibilityTimerRepeatTime;
+            serverAccessiblityTimer.Enabled = true;
         }
 
         // sends message to server
         public void Send(string msg)
-        {
-            byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
-            socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
-            Console.WriteLine("Send - msg: " + msg);
+        {           
+            if(game.ServerOnline)
+            {
+                // server is accessible
+                byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
+                socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
+                Console.WriteLine("Send - msg: " + msg);
+            }
+            else
+            {
+                // server not accessible
+                Console.WriteLine("Can not send - server not accessible - msg: " + msg);
+            }
+            
         }
 
         // listening loop
@@ -112,8 +130,8 @@ namespace ups_client
                 }
                 */
 
-                Thread.Sleep(250);
-
+                Thread.Sleep(250);             
+               
                 // only if something is available
                 if (socket.Available > 0)
                 {
@@ -196,11 +214,77 @@ namespace ups_client
                 case Constants.playAgain:
                     Form.HandlePlayAgain(msgParts);
                     break;
+                case Constants.ping:
+                    HandlePing(msgParts);
+                    break;
+                case Constants.opponentOffline:
+                    Form.HandleOpponentOffline(msgParts);
+                    break;
+                case Constants.opponentOnline:
+                    Form.HandleOpponentOnline(msgParts);
+                    break;
                 default:
                     Console.WriteLine("Handle message - invalid keyword");
                     CloseSocket();
                     break;
             }
-        }       
+        }
+
+        // handles ping message from server
+        private void HandlePing(string[] msgParts)
+        {
+            // check of valid count of message parts
+            if (msgParts.Length != 1)
+            {
+                Console.WriteLine("Ping handling - bad message parts count");
+                CloseSocket();
+            }
+
+            if(!game.ServerOnline)
+            {
+                // update server accessibility in gui
+                game.LastPingTimestamp = DateTime.Now;
+                game.ServerOnline = true;
+                UpdateGuiOnAccessibilityChange();
+            }  
+
+            // send pong
+            Send(SendMsgUtils.Pong());
+        }
+
+        // updates gui when server accessiblity has changed
+        private void UpdateGuiOnAccessibilityChange()
+        {
+            Console.WriteLine("Server accessiblity - value changed");                         
+
+            if (Program.LoginFormOpened)
+            {
+                // for login form
+                LoginForm.UpdateServerOnline();
+            }
+            else
+            {
+                // for game form
+                Form.PrintGame();
+            }
+        }
+
+        // check if server pings the client
+        private void CheckServerAccessibility(object source, ElapsedEventArgs e)
+        {
+            if(game.ServerOnline)
+            {
+                // measure distinction from last ping
+                DateTime current = DateTime.Now;
+                TimeSpan distinction = current - game.LastPingTimestamp;
+
+                // if distinction exceeded max allowed value
+                if(distinction.TotalMilliseconds > Constants.maxPingDelay)
+                {
+                    game.ServerOnline = false;
+                    UpdateGuiOnAccessibilityChange();
+                }
+            }            
+        }        
     }
 }

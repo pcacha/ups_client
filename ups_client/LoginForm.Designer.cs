@@ -33,6 +33,7 @@ namespace ups_client
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.connectButton = new System.Windows.Forms.Button();
+            this.onlineLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // nameTextBox
@@ -74,12 +75,23 @@ namespace ups_client
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
+            // onlineLabel
+            // 
+            this.onlineLabel.AutoSize = true;
+            this.onlineLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.onlineLabel.Location = new System.Drawing.Point(337, 159);
+            this.onlineLabel.Name = "onlineLabel";
+            this.onlineLabel.Size = new System.Drawing.Size(68, 24);
+            this.onlineLabel.TabIndex = 4;
+            this.onlineLabel.Text = "online";
+            // 
             // LoginForm
             // 
             this.AcceptButton = this.connectButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(417, 195);
+            this.Controls.Add(this.onlineLabel);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -99,5 +111,6 @@ namespace ups_client
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button connectButton;
+        private System.Windows.Forms.Label onlineLabel;
     }
 }

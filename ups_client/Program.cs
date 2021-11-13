@@ -9,6 +9,9 @@ namespace ups_client
 {
     static class Program
     {
+        // determines which form is oppened
+        public static bool LoginFormOpened { get; set; } = true;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

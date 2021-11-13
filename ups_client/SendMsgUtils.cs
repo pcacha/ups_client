@@ -31,9 +31,15 @@ namespace ups_client
         }
 
         // returns play again message
-        internal static string PlayAgain()
+        public static string PlayAgain()
         {
             return Constants.msgStart + Constants.playAgain + Constants.msgEnd;
+        }
+
+        // returns pong message
+        public static string Pong()
+        {
+            return Constants.msgStart + Constants.pong + Constants.msgEnd;
         }
     }
 }
