@@ -225,7 +225,16 @@ namespace ups_client
                     opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
                 }
             }));          
-        }        
+        }
+
+        // hides the form safely
+        public void MyHide()
+        {
+            Invoke(new Action(() =>
+            {
+                Hide();
+            }));
+        }
 
         // delte selection btn event
         private void clearSelectionBtn_Click(object sender, EventArgs e)
@@ -390,7 +399,8 @@ namespace ups_client
             {
                 socketManager.Send(SendMsgUtils.Leave());
                 leaveSend = true;
-            }           
+            }
+            socketManager.PrintStatisticalData();
             Application.Exit();
         }
 
@@ -445,10 +455,10 @@ namespace ups_client
         // handles opponent offline message
         public void HandleOpponentOffline(string[] msgParts)
         {
-            // check of valid game state and mesage validity
-            if (game.GameState != GameStateEnum.IN_GAME || msgParts.Length != 1)
+            // check of mesage validity
+            if (msgParts.Length != 1)
             {
-                Console.WriteLine("Opponent offline handling - bad game state or message parts count");
+                Console.WriteLine("Opponent offline handling - bad message parts count");
                 socketManager.CloseSocket();
             }
 

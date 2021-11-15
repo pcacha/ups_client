@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -31,6 +32,11 @@ namespace ups_client
         public Form1 Form { get; set; }
         // login form
         public LoginForm LoginForm { get; set; }
+
+        // statistical data
+        private int bytesCount = 0;
+        private int messagesCount = 0;
+        private DateTime programStartTime = DateTime.Now;
 
         // constructor
         public SocketManager(string ipAdress, int port, Game game)
@@ -138,7 +144,9 @@ namespace ups_client
                 // only if something is available
                 if (socket.Available > 0)
                 {
-                    if(socket.Available > Constants.maxMsgBatchLength)
+                    bytesCount += socket.Available;
+
+                    if (socket.Available > Constants.maxMsgBatchLength)
                     {
                         Console.WriteLine("Socket - max batch length exceeded");
                         CloseSocket();
@@ -174,6 +182,7 @@ namespace ups_client
                             {
                                 Console.WriteLine("Received - msg: " + msg);
                             }
+                            messagesCount++;
                             HandleMessage(msg);
                         }
                         else
@@ -186,13 +195,43 @@ namespace ups_client
             }
         }
 
+        // prints statistics to file
+        public void PrintStatisticalData()
+        {
+            // measure uptime
+            DateTime current = DateTime.Now;
+            TimeSpan uptime = current - programStartTime;
+            double uptimeSeconds = uptime.TotalSeconds;
+
+            // print data
+            using (StreamWriter writer = new StreamWriter(new FileStream(Constants.statDataFileName, FileMode.Create)))
+            {
+                writer.WriteLine("Transported bytes count: " + bytesCount);
+                writer.WriteLine("Transported messages count: " + messagesCount);
+                writer.WriteLine("Uptime in seconds: " + uptimeSeconds);
+            }
+            Console.WriteLine("Statistics printed");
+        }
+
         // closes socket and application
         public void CloseSocket()
         {
             Console.WriteLine("Socket - error");
             Console.WriteLine("Application - close");
             socket.Close();
+
+            // hide the form
+            if(Program.LoginFormOpened)
+            {
+                LoginForm.MyHide();
+            }
+            else
+            {
+                Form.MyHide();
+            }
             //Application.Exit();
+
+            PrintStatisticalData();
         }
 
         // handles incoming message
