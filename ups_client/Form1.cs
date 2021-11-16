@@ -401,6 +401,7 @@ namespace ups_client
                 leaveSend = true;
             }
             socketManager.PrintStatisticalData();
+            Console.WriteLine("Statistics printed");
             Application.Exit();
         }
 

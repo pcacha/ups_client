@@ -32,6 +32,8 @@ namespace ups_client
         public Form1 Form { get; set; }
         // login form
         public LoginForm LoginForm { get; set; }
+        // determines if bind succeeded
+        public bool BindOk { get; set; }
 
         // statistical data
         private int bytesCount = 0;
@@ -44,19 +46,69 @@ namespace ups_client
             this.ipAdress = ipAdress;
             this.port = port;
             this.game = game;
-
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            BindOk = true;
+            
             try
             {
                 // try connect
-                socket.Connect(IPAddress.Parse(ipAdress), port);
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                // check if first argument is hostname or ip address
+                MatchCollection matches = Regex.Matches(ipAdress, Constants.ipAddressRegex);
+
+                if (matches.Count == 0)
+                {
+                    // first parameter is not ip address but hostname
+                    // get ip addresses from hostname
+                    IPAddress[] addressList;
+                    try
+                    {
+                        addressList = Dns.GetHostAddresses(ipAdress);
+                    }
+                    catch
+                    {
+                        // no ip address available
+                        Console.WriteLine("Connect - error - bad hostname");
+                        BindOk = false;
+                        return;
+                    }
+                    
+
+                    if(addressList.Length == 0)
+                    {
+                        // no ip address available
+                        Console.WriteLine("Connect - error - bad hostname");
+                        BindOk = false;
+                        return;
+                    }
+
+                    // get frist ipv4 address
+                    IPAddress ipFromDns = null;
+                    foreach(IPAddress address in addressList)
+                    {
+                        if(address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            ipFromDns = address;
+                            break;
+                        }
+                    }
+
+                    socket.Connect(ipFromDns, port);
+                }
+                else
+                {
+                    // first parameter is ip address
+                    socket.Connect(IPAddress.Parse(ipAdress), port);
+                }
+                
                 Console.WriteLine("Connect - OK");
             }
             catch
             {
                 // if connection failed
                 Console.WriteLine("Connect - error");
-                Application.Exit();
+                BindOk = false;
+                return;
             }
 
             // start timer for evaluating server accessiblity
@@ -209,8 +261,7 @@ namespace ups_client
                 writer.WriteLine("Transported bytes count: " + bytesCount);
                 writer.WriteLine("Transported messages count: " + messagesCount);
                 writer.WriteLine("Uptime in seconds: " + uptimeSeconds);
-            }
-            Console.WriteLine("Statistics printed");
+            }            
         }
 
         // closes socket and application
