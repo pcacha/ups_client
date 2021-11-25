@@ -123,13 +123,20 @@ namespace ups_client
         {           
             if(game.ServerOnline)
             {
-                // server is accessible
-                byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
-                socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
-                if(!msg.Contains(Constants.pong))
+                try
                 {
-                    Console.WriteLine("Send - msg: " + msg);
+                    // server is accessible
+                    byte[] byteMsg = Encoding.UTF8.GetBytes(msg);
+                    socket.Send(byteMsg, 0, byteMsg.Length, SocketFlags.None);
+                    if (!msg.Contains(Constants.pong))
+                    {
+                        Console.WriteLine("Send - msg: " + msg);
+                    }
                 }
+                catch
+                {
+                    Console.WriteLine("Cannot send - msg: " + msg);
+                }               
             }
             else
             {
@@ -269,20 +276,10 @@ namespace ups_client
         {
             Console.WriteLine("Socket - error");
             Console.WriteLine("Application - close");
-            socket.Close();
-
-            // hide the form
-            if(Program.LoginFormOpened)
-            {
-                LoginForm.MyHide();
-            }
-            else
-            {
-                Form.MyHide();
-            }
-            //Application.Exit();
+            socket.Close();                       
 
             PrintStatisticalData();
+            Environment.Exit(0);
         }
 
         // handles incoming message
@@ -372,19 +369,29 @@ namespace ups_client
         // check if server pings the client
         private void CheckServerAccessibility(object source, ElapsedEventArgs e)
         {
-            if(game.ServerOnline)
-            {
-                // measure distinction from last ping
-                DateTime current = DateTime.Now;
-                TimeSpan distinction = current - game.LastPingTimestamp;
+            // measure distinction from last ping
+            DateTime current = DateTime.Now;
+            TimeSpan distinction = current - game.LastPingTimestamp;
 
+            if (game.ServerOnline)
+            {             
                 // if distinction exceeded max allowed value
                 if(distinction.TotalMilliseconds > Constants.maxPingDelay)
                 {
                     game.ServerOnline = false;                   
                     UpdateGuiOnAccessibilityChange();
-                }
-            }            
+                }               
+            }
+
+            if (distinction.TotalMilliseconds > Constants.maxOfflineTime)
+            {
+                Console.WriteLine("Offline - offline too long");
+                Console.WriteLine("Application - close");
+                socket.Close();                
+
+                PrintStatisticalData();
+                Application.Exit();
+            }
         }        
     }
 }
