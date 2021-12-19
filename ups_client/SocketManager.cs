@@ -217,7 +217,8 @@ namespace ups_client
                     string dataString = Encoding.UTF8.GetString(dataChars, 0, dataChars.Length);
                     if (!dataString.Contains(Constants.ping))
                     {
-                        Console.WriteLine("Socket - data on socket: " + dataString);
+                        // TODO
+                        // Console.WriteLine("Socket - data on socket: " + dataString);
                     }
                         
 
