@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ups_client.Constants;
 
 namespace ups_client
 {
@@ -81,10 +80,10 @@ namespace ups_client
             PlayerPlaying = null;
             
             // initialize game fields
-            GameFields = new GameField[gameboardLength, gameboardLength];
-            for (int i = 0; i < gameboardLength; i++)
+            GameFields = new GameField[Constants.gameboardLength, Constants.gameboardLength];
+            for (int i = 0; i < Constants.gameboardLength; i++)
             {
-                for(int j = 0; j < gameboardLength; j++)
+                for(int j = 0; j < Constants.gameboardLength; j++)
                 {
                     GameFields[i, j] = new GameField();
                 }
@@ -124,9 +123,9 @@ namespace ups_client
             int counter = 0;
 
             // foreach field of game board
-            for (int i = 0; i < gameboardLength; i++)
+            for (int i = 0; i < Constants.gameboardLength; i++)
             {
-                for (int j = 0; j < gameboardLength; j++)
+                for (int j = 0; j < Constants.gameboardLength; j++)
                 {
                     GameFields[i, j].SetEncodingBased(gameboardEncoded[counter]);
                     counter++;
@@ -146,9 +145,9 @@ namespace ups_client
             Select(-1, -1);
 
             // reset gameboard
-            for (int i = 0; i < gameboardLength; i++)
+            for (int i = 0; i < Constants.gameboardLength; i++)
             {
-                for (int j = 0; j < gameboardLength; j++)
+                for (int j = 0; j < Constants.gameboardLength; j++)
                 {
                     GameFields[i, j].Reset();
                 }

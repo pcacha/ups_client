@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static ups_client.Constants;
 
 namespace ups_client
 {
@@ -38,14 +37,14 @@ namespace ups_client
         {
             InitializeComponent();
             this.game = game;
-            panels = new Panel[gameboardLength, gameboardLength];
+            panels = new Panel[Constants.gameboardLength, Constants.gameboardLength];
             this.socketManager = socketManager;
             leaveSend = false;
 
-            whiteStoneImg = Image.FromFile(whiteStonePath);
-            blackStoneImg = Image.FromFile(blackStonePath);
-            whiteKingImg = Image.FromFile(whiteKingPath);
-            blackKingImg = Image.FromFile(blackKingPath);
+            whiteStoneImg = Image.FromFile(Constants.whiteStonePath);
+            blackStoneImg = Image.FromFile(Constants.blackStonePath);
+            whiteKingImg = Image.FromFile(Constants.whiteKingPath);
+            blackKingImg = Image.FromFile(Constants.blackKingPath);
         }
 
         // on load event
@@ -64,10 +63,10 @@ namespace ups_client
             {
                 playAgainBtn.Visible = false;
                 gamePanel = new Panel();
-                gamePanel.Height = gameboardPanelSize * gameboardLength;
-                gamePanel.Width = gameboardPanelSize * gameboardLength;
-                gamePanel.Top = topMargin;
-                gamePanel.Left = leftMargin;
+                gamePanel.Height = Constants.gameboardPanelSize * Constants.gameboardLength;
+                gamePanel.Width = Constants.gameboardPanelSize * Constants.gameboardLength;
+                gamePanel.Top = Constants.topMargin;
+                gamePanel.Left = Constants.leftMargin;
                 gamePanel.Cursor = Cursors.Hand;
                 this.Controls.Add(gamePanel);
             }));            
@@ -80,27 +79,27 @@ namespace ups_client
             Invoke(new Action(() =>
             {
                 // for all fields in game board
-                for (int i = 0; i < gameboardLength; i++)
+                for (int i = 0; i < Constants.gameboardLength; i++)
                 {
-                    for (int j = 0; j < gameboardLength; j++)
+                    for (int j = 0; j < Constants.gameboardLength; j++)
                     {
                         // create panel
                         Panel p = new Panel();
                         p.Click += new EventHandler(gameboardPanel_Click);
-                        p.Height = gameboardPanelSize;
-                        p.Width = gameboardPanelSize;
-                        p.Top = i * gameboardPanelSize;
-                        p.Left = j * gameboardPanelSize;
+                        p.Height = Constants.gameboardPanelSize;
+                        p.Width = Constants.gameboardPanelSize;
+                        p.Top = i * Constants.gameboardPanelSize;
+                        p.Left = j * Constants.gameboardPanelSize;
                         panels[i, j] = p;
 
                         // set its color and add it to form
                         if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
                         {
-                            p.BackColor = whiteGameboardPanelColor;
+                            p.BackColor = Constants.whiteGameboardPanelColor;
                         }
                         else
                         {
-                            p.BackColor = blackGameboardPanelColor;
+                            p.BackColor = Constants.blackGameboardPanelColor;
                         }
 
                         gamePanel.Controls.Add(p);
@@ -124,9 +123,9 @@ namespace ups_client
                 GameField[,] gameFields = game.GameFields;
 
                 // for each field of game board
-                for (int i = 0; i < gameboardLength; i++)
+                for (int i = 0; i < Constants.gameboardLength; i++)
                 {
-                    for (int j = 0; j < gameboardLength; j++)
+                    for (int j = 0; j < Constants.gameboardLength; j++)
                     {
                         GameField gf = gameFields[i, j];
                         Panel p = panels[i, j];
@@ -134,15 +133,15 @@ namespace ups_client
                         // set field color
                         if (gf.IsSelected)
                         {
-                            p.BackColor = selectedGameboardPanelColor;
+                            p.BackColor = Constants.selectedGameboardPanelColor;
                         }
                         else if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0))
                         {
-                            p.BackColor = whiteGameboardPanelColor;
+                            p.BackColor = Constants.whiteGameboardPanelColor;
                         }
                         else
                         {
-                            p.BackColor = blackGameboardPanelColor;
+                            p.BackColor = Constants.blackGameboardPanelColor;
                         }
 
                         // set background image if field contains stone
@@ -215,14 +214,14 @@ namespace ups_client
                 if (game.IsPlayerWhite)
                 {
                     // for white player
-                    playerStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
-                    opponentStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
+                    playerStonePanel.BackgroundImage = Image.FromFile(Constants.whiteStonePath);
+                    opponentStonePanel.BackgroundImage = Image.FromFile(Constants.blackStonePath);
                 }
                 else
                 {
                     // for black player
-                    playerStonePanel.BackgroundImage = Image.FromFile(blackStonePath);
-                    opponentStonePanel.BackgroundImage = Image.FromFile(whiteStonePath);
+                    playerStonePanel.BackgroundImage = Image.FromFile(Constants.blackStonePath);
+                    opponentStonePanel.BackgroundImage = Image.FromFile(Constants.whiteStonePath);
                 }
             }));          
         }
@@ -250,8 +249,8 @@ namespace ups_client
             GameField[,] gameFields = game.GameFields;
             Panel panel = (Panel)sender;
             Point location = panel.Location;
-            int x = location.X / gameboardPanelSize;
-            int y = location.Y / gameboardPanelSize;           
+            int x = location.X / Constants.gameboardPanelSize;
+            int y = location.Y / Constants.gameboardPanelSize;           
             
             // only in game and if player is playing
             if(game.GameState == GameStateEnum.IN_GAME && game.PlayerPlaying == true)

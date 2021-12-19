@@ -10,7 +10,7 @@ namespace ups_client
     static class Program
     {
         // determines which form is oppened
-        public static bool LoginFormOpened { get; set; } = true;
+        public static bool LoginFormOpened { get; set; }
 
         /// <summary>
         /// The main entry point for the application.
@@ -18,6 +18,8 @@ namespace ups_client
         [STAThread]
         static void Main()
         {
+            LoginFormOpened = true;
+
             // program args
             string[] args = Environment.GetCommandLineArgs();           
 
