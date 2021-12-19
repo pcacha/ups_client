@@ -1,3 +1,0 @@
-Transported bytes count: 573
-Transported messages count: 14
-Uptime in seconds: 280,1382401
