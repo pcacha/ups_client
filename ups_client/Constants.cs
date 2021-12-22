@@ -25,8 +25,8 @@ namespace ups_client
         // timer event repeat time in [ms]
         public const double serverAccessibilityTimerRepeatTime = 250;
         // determines the max delay of ping, if this limit is exceeded, server is considered offline
-        // public const int maxPingDelay = 1500;
-        public const int maxPingDelay = 60000;
+        public const int maxPingDelay = 1500;
+        // public const int maxPingDelay = 60000;
         // max times in milliseconds that player can be offline before the app is closed - 15 min
         public const int maxOfflineTime = 900000;        
         // color for black field of game board
