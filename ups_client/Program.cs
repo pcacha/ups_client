@@ -34,7 +34,7 @@ namespace ups_client
             int port = Int32.Parse(args[2]);
             string ipAddress = args[1];
 
-            if (port < 1024 || port > 65535)
+            if (port < 0 || port > 65535)
             {
                 Console.WriteLine("Start - port has bad range");
                 return;
